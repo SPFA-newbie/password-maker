@@ -49,7 +49,13 @@ namespace PasswordMaker
             // Stage 2
             newArr = SHA256.HashData(newArr);
 
-            // Stage 3
+            // Stage 3 - Use tagName
+            byte[] tag = Encoding.Unicode.GetBytes(extra.name);
+            tag = SHA256.HashData(tag);
+            for (int i = 0; i < newArr.Length; i++)
+                newArr[i] ^= tag[i];
+
+            // Stage 4
             string charset = "";
             if (extra.lowercase) charset += lowcase;
             if (extra.digit) charset += digit;
@@ -63,7 +69,7 @@ namespace PasswordMaker
                 charset += temp;
             }
 
-            // Stage 4 - Output(SendKey)
+            // Stage 5 - Output(SendKey)
             int needLength = extra.length;
             int arrPos = 0;
             while (needLength != 0)
